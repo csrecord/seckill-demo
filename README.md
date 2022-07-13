@@ -1,84 +1,83 @@
-# seckill-demo
 
-项目：主要目的是通过本项目练习SpingBoot学习过程中所学知识，逐渐将学习到的技能融合至项目中.
+## 主要目的是通过本项目练习SpingBoot学习过程中所学知识，逐渐将学习到的技能融合至项目中.
 
 区域性抢占式核酸预约系统已完成/优化功能
 
 
+1项目框架搭建 	
 
-1 项目框架搭建 	
+- [x] SpringBoot+Maven环境搭建 	
 
-1.1 SpringBoot环境搭建 	
-
-1.2 集成Thymeleaf, RespBean 	
-
-1.3 Mybatis-plus 
+- [x] 集成Thymeleaf, RespBean, Mybatis-plus 
 
 2 分布式会话 	
 
-2.1 用户登录 			
+- [x] 明文密码二次MD5加密 			
 
-a. 设计数据库 			
+- [x] 参数校验+全局异常处理 	
 
-b. 明文密码二次MD5加密 			
+- [x] 共享Session（主要为用户session） 			
 
-c. 参数校验+全局异常处理 	
+- [x] SpringSession依赖引入 			
 
-2.2 共享Session（主要为用户session） 			
-
-a. SpringSession 			
-
-b. Redis 
+- [x] Spring整合Redis 
 
 3 功能开发 	
 
-3.1 核酸点位列表	
+- [x] 核酸点位列表功能开发	
 
-3.2立即预约
+- [x] 立即预约功能
 
-3.3 工单详情
+- [x] 预约工单详情
 
 4 系统压测 	
 
-4.1 Jmeter 	
+- [x] Jmeter 	
 
-4.2 自定义变量模拟多用户 	
+- [x] 自定义变量模拟多用户 	
 
-4.3 Jmeter命令行使用 	
+- [x] Jmeter命令行使用
+```shell
+# 生成报告  first.jmx生成的Jmter配置文件 result聚合报告结果
+./jmeter.sh -n -t first.jmx -l result.jtl
+```
+- [x] 正式压测 			
 
-4.4 正式压测 			
+- [x] 检测点列表 			
 
-a. 检测点列表 			
-
-b. 立即预约功能 
+- [x] 立即预约功能 
 
 5 页面优化 	
 
-5.1 页面缓存+URL缓存+对象缓存 	
+- [x] 页面缓存+URL缓存+对象缓存 	
 
-5.2 页面静态化, 前后端分离 	
+- [x] 页面静态化, 前后端分离 	
 
-5.3 静态资源优化 	
+- [x] 静态资源优化 	
 
-5.4 CDN优化 6 接口优化 	
+- [ ] CDN优化 
 
-6.1 Redis预减库存减少数据库的访问 	
+6 接口优化 	
 
-6.2 内存标记减少Redis的访问 	
+- [x] Redis预减库存减少数据库的访问 	
 
-6.3 RabbitMQ异步下单（异步预约） 			
+- [x] 内存标记减少Redis的访问 	
 
-a. SpringBoot整合RabbitMQ 			
+- [x] RabbitMQ异步预约（异步预约） 			
 
-b. 交换机EXCHANGE 7 安全优化 	
+- [x] SpringBoot整合RabbitMQ 			
 
-7.1 预约接口地址隐藏 	
+- [x] 交换机EXCHANGE学习 
 
-7.2 算术验证码 	
+7 安全优化 	
 
-7.3 接口防刷 
+- [x] 预约接口地址隐藏 	
 
-8 项目体验Demo.
+- [x] 算术验证码 	
+
+- [ ] 接口防刷 
+
+- [ ] 项目体验Demo.
 
 # 1 项目框架搭建
 
