@@ -1,10 +1,84 @@
 # seckill-demo
 
-秒杀练习项目：主要目的是通过本项目练习SpingBoot学习过程中所学知识，逐渐将学习到的技能融合至项目中.
+项目：主要目的是通过本项目练习SpingBoot学习过程中所学知识，逐渐将学习到的技能融合至项目中.
 
-目录
+区域性抢占式核酸预约系统已完成/优化功能
 
-[toc]
+
+
+1 项目框架搭建 	
+
+1.1 SpringBoot环境搭建 	
+
+1.2 集成Thymeleaf, RespBean 	
+
+1.3 Mybatis-plus 
+
+2 分布式会话 	
+
+2.1 用户登录 			
+
+a. 设计数据库 			
+
+b. 明文密码二次MD5加密 			
+
+c. 参数校验+全局异常处理 	
+
+2.2 共享Session（主要为用户session） 			
+
+a. SpringSession 			
+
+b. Redis 
+
+3 功能开发 	
+
+3.1 核酸点位列表	
+
+3.2立即预约
+
+3.3 工单详情
+
+4 系统压测 	
+
+4.1 Jmeter 	
+
+4.2 自定义变量模拟多用户 	
+
+4.3 Jmeter命令行使用 	
+
+4.4 正式压测 			
+
+a. 检测点列表 			
+
+b. 立即预约功能 
+
+5 页面优化 	
+
+5.1 页面缓存+URL缓存+对象缓存 	
+
+5.2 页面静态化, 前后端分离 	
+
+5.3 静态资源优化 	
+
+5.4 CDN优化 6 接口优化 	
+
+6.1 Redis预减库存减少数据库的访问 	
+
+6.2 内存标记减少Redis的访问 	
+
+6.3 RabbitMQ异步下单（异步预约） 			
+
+a. SpringBoot整合RabbitMQ 			
+
+b. 交换机EXCHANGE 7 安全优化 	
+
+7.1 预约接口地址隐藏 	
+
+7.2 算术验证码 	
+
+7.3 接口防刷 
+
+8 项目体验Demo.
 
 # 1 项目框架搭建
 
@@ -38,8 +112,6 @@ RespBean的目的是定义公共返回对象枚举，可以用作为用户在登
 
 ### a. 设计数据库
 
-参考链接[数据库文件seckill-demo.sql](https://github.com/ChenSheng6869/seckill-demo/blob/main/seckill.sql) 
-
 表设计：
 
 **用户表**
@@ -60,82 +132,6 @@ create table `t_user` (
     `login_count` int(11) default '0',
     primary key(`id`)
 )engine=innodb default charset=utf8;
-```
-
-**商品表**
-
-|  id  | goods_name | goods_title | goods_img | goods_detail | goods_price | goods_stock |
-| :--: | :--------: | :---------: | :-------: | :----------: | :---------: | :---------: |
-|      |            |             |           |              |             |             |
-
-```sql
-CREATE TABLE `t_goods` (
-      `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '商品id',
-      `goods_name` VARCHAR(16) DEFAULT NULL COMMENT '商品名称',
-      `goods_title` VARCHAR(64) DEFAULT NULL COMMENT '商品标题',
-      `goods_img` VARCHAR(64) DEFAULT NULL COMMENT '商品图片',
-      `goods_detail` LONGTEXT COMMENT '商品详情',
-      `goods_price` DECIMAL(10,2) DEFAULT '0.00' COMMENT '商品价格',
-      `goods_stock` INT(11) DEFAULT '0' COMMENT '商品库存,-1表示无限制',
-      PRIMARY KEY (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
-```
-
-**订单表**
-
-|  id  | user_id | goods_id | deliver_addr | goods_name | goods_count | goods_price | order_channel | status | create_date | pay_time |
-| :--: | :-----: | :------: | :----------: | :--------: | :---------: | :---------: | :-----------: | :----: | :---------: | :------: |
-|      |         |          |              |            |             |             |               |        |             |          |
-
-```sql
-CREATE TABLE `t_order` (
-      `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '订单id',
-      `user_id` BIGINT(20) DEFAULT NULL COMMENT '用户id',
-      `goods_id` BIGINT(20) DEFAULT NULL COMMENT '商品id',
-      `delivery_addr_id` BIGINT(20) DEFAULT NULL COMMENT '收货地址id',
-      `goods_name` VARCHAR(16) DEFAULT NULL COMMENT '冗余过来的商品名称',
-      `goods_count` INT(11) DEFAULT '0' COMMENT '商品数量',
-      `goods_price` DECIMAL(10,2) DEFAULT '0.00' COMMENT '商品单价',
-      `order_channel` TINYINT(4) DEFAULT '0' COMMENT '1pc,2android,3ios',
-      `status` TINYINT(4) DEFAULT '0' COMMENT '订单状态,0 1 2 3 4 5',
-      `create_date` DATETIME DEFAULT NULL COMMENT '订单创建时间',
-      `pay_time` DATETIME DEFAULT NULL COMMENT '支付时间',
-      PRIMARY KEY (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
-```
-
-**秒杀商品表**
-
-|   id   | goods_id | seckill_price | stock_count | start_date | stop_date |
-| :----: | :------: | :-----------: | :---------: | :--------: | :-------: |
-| 主键id |  商品id  |   商品价格    |    库存     |  开始时间  | 结束时间  |
-
-```sql
-create table `t_seckill_goods`(
-    `id` bigint(20) not null auto_increment,
-    `goods_id` bigint(20) default null,
-    `seckill_price` decimal(12,0) default '0',
-    `stock_count` int(10) default null,
-    `start_date` datetime default null,
-    `stop_date` datetime default null,
-    primary key(`id`)
-)engine=innodb auto_increment=3 default charset=utf8mb4;
-```
-
-**秒杀订单表**
-
-|   id   | user_id | order_id | goods_id |
-| :----: | :-----: | :------: | :------: |
-| 主键id | 用户id  |  订单id  |  商品id  |
-
-```sql
-create table `t_seckill_order`(
-    `id` bigint(20) not null auto_increment,
-    `user_id` bigint(20) default null,
-    `order_id` bigint(20) default null,
-    `goods_id` bigint(20) default null,
-    primary key (`id`)
-)engine=innodb auto_increment=3 default charset=utf8mb4;
 ```
 
 ### b. 明文密码二次MD5加密 
@@ -332,7 +328,7 @@ public class GlobalExceptionHandler {
 
  主要描述goodsList和goodsDetails后端实现
 
-## 3.1 商品列表功能
+## 3.1 核酸预约列表
 
 ```java
 @RequestMapping(value = "/toList", produces = "text/html;charset=utf-8")
@@ -359,7 +355,7 @@ public String toList(Model model, User user,HttpServletRequest request,HttpServl
 }
 ```
 
-## 3.2 商品详情
+## 3.2 预约详情
 
 ```java
 @RequestMapping("/detail/{goodsId}")
@@ -368,12 +364,12 @@ public String toList(Model model, User user,HttpServletRequest request,HttpServl
 public RespBean toDetail(Model model, User user, @PathVariable Long goodsId){
 
     GoodsVo goodsVo = goodsService.findGoodsVoByGoodsId(goodsId);
-    //定义秒杀状态
+    //定义预约状态
     Date startDate = goodsVo.getStartDate();
     Date endDate = goodsVo.getEndDate();
     Date nowDate = new Date();
     int seckillStatus = 0;
-    //秒杀倒计时
+    //预约倒计时
     int remainSeconds = 0;
     if (nowDate.before(startDate)){
         remainSeconds = ((int) ((startDate.getTime() - nowDate.getTime()) / 1000));
@@ -394,10 +390,10 @@ public RespBean toDetail(Model model, User user, @PathVariable Long goodsId){
 }
 ```
 
-## 3.3 秒杀 	
+## 3.3 立即预约 	
 
 ```java
-//跳转秒杀页面
+//跳转预约确定页面
 @RequestMapping(value = "/{path}/doSeckill", method = RequestMethod.POST)
 @ResponseBody
 public RespBean doSecKill(@PathVariable String path, User user, Long goodsId){
@@ -410,9 +406,6 @@ public RespBean doSecKill(@PathVariable String path, User user, Long goodsId){
     if(!check) {
         return RespBean.error(RespBeanEnum.PATH_ERROR);
     }
-
-    //判断是否重复抢购, t_seckill_order添加唯一索引user_id和goods_id
-    //2.存入redis在这里获取秒杀订单,在系统初始化时就把商品库存加载到redis中,通过redis预减库存,减少数据库操作
     SeckillOrder seckillOrder = (SeckillOrder) redisTemplate.opsForValue().get("order:" + user.getId() + ":" + goodsId);
     if (seckillOrder!=null){
         return RespBean.error(RespBeanEnum.REPEATE_ERROR);
@@ -421,7 +414,7 @@ public RespBean doSecKill(@PathVariable String path, User user, Long goodsId){
     if (EmptyStockMap.get(goodsId)){
         return RespBean.error(RespBeanEnum.EMPTY_STOCK);
     }
-    //3.decrement是原子性的,用它来预减库存操作
+    //3.decrement是原子性的,用它来预减数据库余量操作
     //Long stock = valueOperations.decrement("seckillGoods:" + goodsId);
     //分布式锁预减库存
     Long stock = (Long) redisTemplate.execute(script, Collections.singletonList("seckillGoods:" + goodsId), Collections.EMPTY_LIST);
@@ -430,12 +423,12 @@ public RespBean doSecKill(@PathVariable String path, User user, Long goodsId){
         valueOperations.increment("seckillGoods:"+goodsId);//由于递减之后是一个负数,这里递加为零
         return RespBean.error(RespBeanEnum.EMPTY_STOCK);
     }
-    //4.下单流程,将用户信息及下单商品ID放入RabbitMQ中
-    //用户信息及下单商品ID对象
+    //4.预约流程,将用户信息及工单ID放入RabbitMQ中
+    //用户信息及下单工单ID对象
     SeckillMessage seckillMessage = new SeckillMessage(user, goodsId);
     //对象转为字符串
     mqSender.sendSeckillMessage(JSON.toJSONString(seckillMessage));
-    //秒杀订单进入排队状态
+    //预约订单进入排队状态
     return RespBean.success(0);
 }
 ```
@@ -483,17 +476,15 @@ Jmeter是Apache的一个开源测试工具.可以对系统接口进行测试及�
 
 ## 4.4 正式压测 			
 
-### a. 商量列表 			
+### a. 可预约监测点列表 			
 
-### b. 秒杀 
+### b. 立即预约功能 
 
 # 5 页面优化
 
 对页面进行优化,优化访问速度 	
 
 ## 5.1 页面缓存+URL缓存+对象缓存 
-
-GoodsController中对商品列表页使用redis优化了商品处理页.
 
 通过redis valueOperations获取页面,如果页面不为空直接返回
 
@@ -533,12 +524,12 @@ goodsDetail和orderDetail进行了页面静态化,前后端分离的操作.
 public RespBean toDetail(Model model, User user, @PathVariable Long goodsId){
 
     GoodsVo goodsVo = goodsService.findGoodsVoByGoodsId(goodsId);
-    //定义秒杀状态
+    //定义预约状态
     Date startDate = goodsVo.getStartDate();
     Date endDate = goodsVo.getEndDate();
     Date nowDate = new Date();
     int seckillStatus = 0;
-    //秒杀倒计时
+    //预约倒计时
     int remainSeconds = 0;
     if (nowDate.before(startDate)){
         remainSeconds = ((int) ((startDate.getTime() - nowDate.getTime()) / 1000));
@@ -567,9 +558,9 @@ public RespBean toDetail(Model model, User user, @PathVariable Long goodsId){
 
 QPS最大的瓶颈在于对数据库的操作,频繁读取数据库压力很大,需要对数据进行缓存,我们通过对数据库的操作提取放到缓存中使用减少数据库的访问,提高用户访问效率,减小数据库压力.虽然加入了缓存,读取页面仍然需要与数据库进行交互,所以采用redis预减库存.	
 
-## 6.1 Redis预减库存减少数据库的访问
+## 6.1 Redis预减数据库余量减少数据库的访问
 
-初始化时将商品库通过goodsVo.getStockCount存加载到redis中,通过redis扣减库存, 这样就可以较少数据库的访问
+初始化时将检测点库通过goodsVo.getStockCount存加载到redis中,通过redis扣减库存, 这样就可以较少数据库的访问
 
 ```java
 @Override
@@ -600,17 +591,17 @@ if (EmptyStockMap.get(goodsId)){
 
 ```
 
-## 6.3 RabbitMQ异步下单
+## 6.3 RabbitMQ异步预约
 
-因为当系统并发量达到时候, 服务器资源有限, 坑不住大量的并发, 使下单请求进入队列缓存, 采用RabbitMQ进行下单优化, 异步下单, 客户端轮询秒杀优化并发.
+因为当系统并发量达到时候, 服务器资源有限, 坑不住大量的并发, 使下单请求进入队列缓存, 采用RabbitMQ进行下单优化, 异步下单, 客户端轮询处理预约工单优化并发.
 
 ```java
-//下单流程,将用户信息及下单商品ID放入RabbitMQ中
-//用户信息及下单商品ID对象
+//预约工单流程,将用户信息及工单ID放入RabbitMQ中
+//用户信息及下单工单ID对象
 SeckillMessage seckillMessage = new SeckillMessage(user, goodsId);
 //对象转为字符串
 mqSender.sendSeckillMessage(JSON.toJSONString(seckillMessage));
-//秒杀订单进入排队状态
+//用户预约工单进入排队状态
 return RespBean.success(0);
 ```
 
@@ -624,11 +615,11 @@ Linux中Rabbit配置可以参考[博客链接](https://www.cnblogs.com/csrecord/
 
 # 7 安全优化 	
 
-## 7.1 秒杀接口地址隐藏 	
+## 7.1 预约接口地址隐藏 	
 
 ## 7.2 算术验证码
 
-防止恶意下单操作, 使用算数验证码的方式来控制下单.
+防止恶意预约操作, 使用算数验证码的方式来控制下单.
 
 ## 7.3 接口防刷 
 

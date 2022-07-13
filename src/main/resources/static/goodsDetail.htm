@@ -15,22 +15,22 @@
 </head>
 <body>
 <div class="panel panel-default">
-    <div class="panel-heading">秒杀商品详情</div>
+    <div class="panel-heading">预约详情</div>
     <div class="panel-body">
         <span id="userTip"> 您还没有登录，请登陆后再操作<br/></span>
-        <span>没有收货地址的提示。。。</span>
+        <span>确认以下检测点是您的选择后点击立即预约</span>
     </div>
     <table class="table" id="goods">
         <tr>
-            <td>商品名称</td>
+            <td>预约点名称</td>
             <td colspan="3" id="goodsName"></td>
         </tr>
         <tr>
-            <td>商品图片</td>
+            <td>预约点图片</td>
             <td colspan="3"><img id="goodsImg" width="200" height="200"/></td>
         </tr>
         <tr>
-            <td>秒杀开始时间</td>
+            <td>核酸开始时间</td>
             <td id="startTime"></td>
             <td>
                 <input type="hidden" id="remainSeconds">
@@ -49,23 +49,16 @@
                         <img width="130" height="32" id="captchaImg" onclick="refreashCaptcha()" style="display: none"/>
                         <input id="captcha" class="form-control" style="display: none">
                         <button class="btn btn-primary" type="button" id="buyButton"
-                                onclick="getSeckillPath()">立即秒杀
+                                onclick="getSeckillPath()">立即预约
                             <input type="hidden" name="goodsId" id="goodsId">
                         </button>
                     </div>
                 </div>
             </td>
         </tr>
+
         <tr>
-            <td>商品原价</td>
-            <td colspan="3" id="goodsPrice"></td>
-        </tr>
-        <tr>
-            <td>秒杀价</td>
-            <td colspan="3" id="seckillPrice"></td>
-        </tr>
-        <tr>
-            <td>库存数量</td>
+            <td>预约余量</td>
             <td colspan="3" id="stockCount"></td>
         </tr>
     </table>
@@ -142,13 +135,13 @@
                 if (data.code == 200){
                     var result = data.obj;
                     if (result<0){
-                        layer.msg("对不起,秒杀失败");
+                        layer.msg("对不起,预约失败");
                     } else if (result == 0){
                         setTimeout(function () {
                             getResult(goodsId);
                         }, 1000);
                     }else{
-                        layer.confirm("恭喜秒杀成功!查看订单?",{btn:["确定","取消"]},
+                        layer.confirm("恭喜预约成功!查看详情?",{btn:["确定","取消"]},
                         function () {
                             window.location.href="/orderDetail.htm?orderId="+result;
                         },
@@ -210,7 +203,7 @@
         //秒杀未开始
         if (remainSeconds>0){
             $("#buyButton").attr("disabled",true);
-            $("#seckillTip").html("秒杀倒计时:"+remainSeconds+"秒")
+            $("#seckillTip").html("预约倒计时:"+remainSeconds+"秒")
             timeout = setTimeout(function () {
                 // $("#countDown").text(remainSeconds-1);
                 $("#remainSeconds").val(remainSeconds-1);
@@ -222,13 +215,13 @@
             if (timeout){
                 clearTimeout(timeout);
             }
-            $("#seckillTip").html("秒杀进行中")
+            $("#seckillTip").html("预约进行中")
             $("#captchaImg").attr("src","/seckill/captcha?goodsId="+$("#goodsId").val() + "&time=" + new Date());
             $("#captchaImg").show();
             $("#captcha").show();
         }else{
             $("#buyButton").attr("disabled",true);
-            $("#seckillTip").html("秒杀已结束")
+            $("#seckillTip").html("预约已结束")
             $("#captchaImg").hide();
             $("#captcha").hide();
         }

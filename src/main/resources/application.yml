@@ -21,9 +21,9 @@ spring:
     cache: false
   # redis配置
   redis:
-    host: localhost
+    host: 106.13.229.77
     port: 6399
-    password: yourpassword
+    password: redis6399
     database: 0
     timeout: 10000ms
     lettuce:
@@ -38,11 +38,11 @@ spring:
         min-idle: 5
   # RabbitMQ
   rabbitmq:
-    host: localhost
+    host: 106.13.229.77
     # 服务端口号
     port: 5672
     username: test
-    password: yourpassword
+    password: rabbit15672
     # 虚拟主机
     virtual-host: /
 
@@ -75,7 +75,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/seckill?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
-    password: yourpassword
+    password: pwd3Y#fLiQM0m_+
     # 数据库连接池
     hikari:
       # 连接池名
